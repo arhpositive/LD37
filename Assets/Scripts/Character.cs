@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,6 +13,7 @@ public class Character : MonoBehaviour
 
     private bool _movementChangeSet;
     private Vector3 _newPosition;
+    private bool _artifactPickedUp;
     private MapGen _mapGenScript;
 
     // Use this for initialization
@@ -94,5 +96,46 @@ public class Character : MonoBehaviour
                 transform.Translate(Time.deltaTime*CharacterSpeed*CurrentMoveDir);
             }
         }
+    }
+
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.gameObject.tag == "Player")
+        {
+            //TODO do stuff, drop artifact, etc.
+            if (_artifactPickedUp)
+            {
+                DropArtifact();
+            }
+        }
+        else if (other.gameObject.tag == "artifact")
+        {
+            //TODO artifact stuff
+            //attach artifact to player
+
+            //destroy game object
+            //enable artifact object on player character, switch a boolean on
+            //eventually we'll still need to spawn a new artifact after this is gone
+            if (!_artifactPickedUp)
+            {
+                Destroy(other.gameObject);
+                PickupArtifact();
+            }
+        }
+    }
+
+    private void PickupArtifact()
+    {
+        transform.GetChild(0).GetComponent<SpriteRenderer>().enabled = true;
+        _artifactPickedUp = true;
+    }
+
+    private void DropArtifact()
+    {
+        transform.GetChild(0).GetComponent<SpriteRenderer>().enabled = false;
+        _artifactPickedUp = false;
+
+        //TODO either drop the artifact on the ground
+        //OR reset the artifact by notifying map gen script
     }
 }
