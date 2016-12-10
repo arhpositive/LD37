@@ -7,6 +7,8 @@ public class Character : MonoBehaviour
     public float CharacterSpeed;
     public Vector2 NextMoveDir;
     public Vector2 CurrentMoveDir;
+    public string HorizontalAxisName;
+    public string VerticalAxisName;
 
     private bool _movementChangeSet;
     private Vector3 _newPosition;
@@ -41,8 +43,8 @@ public class Character : MonoBehaviour
         int futureY = currentY + moveDirY;
 
         //take input and find out next move direction
-        float horizontalInput = Input.GetAxisRaw("Horizontal");
-        float verticalInput = Input.GetAxisRaw("Vertical");
+        float horizontalInput = Input.GetAxisRaw(HorizontalAxisName);
+        float verticalInput = Input.GetAxisRaw(VerticalAxisName);
         
         if ((verticalInput == 0.0f && Mathf.Abs(horizontalInput) == 1.0f) ||
             (horizontalInput == 0.0f && Mathf.Abs(verticalInput) == 1.0f))

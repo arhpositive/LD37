@@ -40,7 +40,7 @@ public class MapGen : MonoBehaviour
             {1,0,0,0,0,0,0,0,0,0,1,0,1,0,2,0},
             {1,1,1,1,1,1,1,0,1,0,1,0,0,0,0,0},
             {1,1,1,1,1,0,0,0,1,0,0,0,1,0,0,0},
-            {1,1,1,1,1,0,1,0,1,0,1,0,1,0,0,0},
+            {1,1,1,1,1,0,1,0,1,0,1,0,1,0,4,0},
             {1,0,0,0,0,0,1,0,1,0,1,0,1,1,0,1},
             {1,0,1,1,1,0,1,0,0,0,1,0,0,0,0,1},
             {1,0,0,0,1,0,1,0,1,1,1,0,1,1,0,1},
@@ -76,10 +76,8 @@ public class MapGen : MonoBehaviour
                         break;
                     case 2:
                     case 4:
-                        bool useMirror = x >= xDim;
-                        int index = useMirror ? code - 1 : code;
-                        if (useMirror)
-                            go = Instantiate(sceneObjectPrefabs[index], coords, Quaternion.identity);
+                        int index = x >= xDim ? code - 1 : code;
+                        go = Instantiate(sceneObjectPrefabs[index], coords, Quaternion.identity);
                         break;
                     default:
                         Assert.IsTrue(false);
