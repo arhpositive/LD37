@@ -6,7 +6,7 @@ using UnityEngine.Assertions;
 
 public class MapGen : MonoBehaviour
 {
-    public GameObject WallPrefab;
+    public GameObject[] sceneObjectPrefabs;
 
     public int[,] CurrentMap { get; private set; }
 
@@ -18,7 +18,8 @@ public class MapGen : MonoBehaviour
     }
 
     // Update is called once per frame
-    private void Update () {
+    private void Update ()
+    {
 		
 	}
 
@@ -26,30 +27,30 @@ public class MapGen : MonoBehaviour
     {
         int[,] map1 =
         {
-            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,1,1,1,1,1,1,0,0,0,0,0,0,0},
-            {0,0,0,1,0,0,0,0,1,0,1,1,1,1,1,1},
-            {0,0,0,1,0,1,1,1,1,1,1,0,1,0,0,0},
-            {0,0,0,1,0,1,0,0,0,0,1,0,1,1,1,1},
-            {0,1,1,1,1,1,1,1,1,0,1,0,1,0,1,0},
-            {0,1,0,0,1,0,0,0,1,0,1,0,1,0,1,0},
-            {0,1,0,0,1,0,0,0,1,0,1,0,1,0,1,0},
-            {0,1,0,0,1,1,1,1,1,1,1,1,1,1,1,1},
-            {0,1,0,0,0,1,0,0,0,0,0,1,0,0,1,0},
-            {0,1,1,1,1,1,1,1,1,1,0,1,0,1,1,1},
-            {0,0,0,0,0,0,0,1,0,1,0,1,1,1,1,1},
-            {0,0,0,0,0,1,1,1,0,1,1,1,0,1,1,1},
-            {0,0,0,0,0,1,0,1,0,1,0,1,0,1,1,1},
-            {0,1,1,1,1,1,0,1,0,1,0,1,0,0,1,0},
-            {0,1,0,0,0,1,0,1,1,1,0,1,1,1,1,0},
-            {0,1,1,1,0,1,0,1,0,0,0,1,0,0,1,0},
-            {0,1,0,1,0,1,0,1,0,1,1,1,0,0,1,1},
-            {0,1,0,1,0,1,0,1,0,1,0,0,0,0,1,0},
-            {0,1,0,1,0,1,0,1,0,1,0,0,0,0,1,0},
-            {0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-            {0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0},
-            {0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1},
-            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+            {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+            {1,1,1,0,0,0,0,0,0,1,1,1,1,1,1,1},
+            {1,1,1,0,1,1,1,1,0,1,0,0,0,0,0,0},
+            {1,1,1,0,1,0,0,0,0,0,0,1,0,1,1,1},
+            {1,1,1,0,1,0,1,1,1,1,0,1,0,0,0,0},
+            {1,0,0,0,0,0,0,0,0,1,0,1,0,1,0,1},
+            {1,0,1,1,0,1,1,1,0,1,0,1,0,1,0,1},
+            {1,0,1,1,0,1,1,1,0,1,0,1,0,1,0,1},
+            {1,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0},
+            {1,0,1,1,1,0,1,1,1,1,1,0,1,1,0,1},
+            {1,0,0,0,0,0,0,0,0,0,1,0,1,0,2,0},
+            {1,1,1,1,1,1,1,0,1,0,1,0,0,0,0,0},
+            {1,1,1,1,1,0,0,0,1,0,0,0,1,0,0,0},
+            {1,1,1,1,1,0,1,0,1,0,1,0,1,0,4,0},
+            {1,0,0,0,0,0,1,0,1,0,1,0,1,1,0,1},
+            {1,0,1,1,1,0,1,0,0,0,1,0,0,0,0,1},
+            {1,0,0,0,1,0,1,0,1,1,1,0,1,1,0,1},
+            {1,0,1,0,1,0,1,0,1,0,0,0,1,1,0,0},
+            {1,0,1,0,1,0,1,0,1,0,1,1,1,1,0,1},
+            {1,0,1,0,1,0,1,0,1,0,1,1,1,1,0,1},
+            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+            {1,1,1,1,1,1,1,1,0,1,1,1,1,1,0,1},
+            {1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0},
+            {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
         };
 
         CurrentMap = map1;
@@ -57,7 +58,6 @@ public class MapGen : MonoBehaviour
 
     private void PlayNextMap()
     {
-        print("yDim: " + CurrentMap.GetLength(0) + " xDim: " + CurrentMap.GetLength(1));
         int yDim = CurrentMap.GetLength(0);
         for (int y = 0; y < yDim; ++y)
         {
@@ -68,14 +68,21 @@ public class MapGen : MonoBehaviour
 
                 int mapX = useMirror ? 2 * xDim - 1 - x : x;
                 int mapY = yDim - (y + 1);
-                
+
+                GameObject go;
                 Vector2 coords = new Vector2(x, y);
-                switch (CurrentMap[mapY, mapX])
+                int code = CurrentMap[mapY, mapX];
+                switch (code)
                 {
                     case 0:
-                        GameObject go = Instantiate(WallPrefab, coords, Quaternion.identity) as GameObject;
                         break;
                     case 1:
+                        go = Instantiate(sceneObjectPrefabs[code - 1], coords, Quaternion.identity) as GameObject;
+                        break;
+                    case 2:
+                    case 4:
+                        int index = useMirror ? code - 1 : code;
+                        go = Instantiate(sceneObjectPrefabs[index], coords, Quaternion.identity) as GameObject;
                         break;
                     default:
                         Assert.IsTrue(false);
