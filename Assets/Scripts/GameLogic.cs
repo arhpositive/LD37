@@ -147,12 +147,14 @@ public class GameLogic : MonoBehaviour
                 switch (code)
                 {
                     case 0:
-                        break;
                     case 1:
-                    case 6:
                     case 7:
+                        go = Instantiate(sceneObjectPrefabs[code], coords, Quaternion.identity);
+                        break;
+                    case 6:
                     case 8:
-                        go = Instantiate(sceneObjectPrefabs[code - 1], coords, Quaternion.identity);
+                        go = Instantiate(sceneObjectPrefabs[0], coords, Quaternion.identity);
+                        go = Instantiate(sceneObjectPrefabs[code], coords, Quaternion.identity);
                         break;
                     default:
                         Assert.IsTrue(false);
@@ -166,7 +168,7 @@ public class GameLogic : MonoBehaviour
         for (int i = 0; i < _activeMap.PlayerCoords.GetLength(0); ++i)
         {
             Vector2 coords = new Vector2(_activeMap.PlayerCoords[i, 0], _activeMap.PlayerCoords[i, 1]);
-            _characters[i] = Instantiate(sceneObjectPrefabs[1+i], coords, Quaternion.identity);
+            _characters[i] = Instantiate(sceneObjectPrefabs[2+i], coords, Quaternion.identity);
         }
         
     }
@@ -193,12 +195,12 @@ public class GameLogic : MonoBehaviour
 
     public void ReplenishArtifact(Vector2 artifactPosition)
     {
-        GameObject go = Instantiate(sceneObjectPrefabs[5], artifactPosition, Quaternion.identity);
+        GameObject go = Instantiate(sceneObjectPrefabs[6], artifactPosition, Quaternion.identity);
     }
 
     public void ReplenishSword(Vector2 swordPosition)
     {
-        GameObject go = Instantiate(sceneObjectPrefabs[7], swordPosition, Quaternion.identity);
+        GameObject go = Instantiate(sceneObjectPrefabs[8], swordPosition, Quaternion.identity);
     }
 
     public void ArtifactScored(int teamNo)
