@@ -8,6 +8,7 @@ public class Character : MonoBehaviour
 {
     public float CharacterSpeed;
     public float ArtifactSpeedCoef;
+    public float SwordSpeedCoef;
     public Vector2 NextMoveDir;
     public Vector2 CurrentMoveDir;
     public string HorizontalAxisName;
@@ -19,6 +20,8 @@ public class Character : MonoBehaviour
     private Vector3 _newPosition;
     private bool _artifactPickedUp;
     private Vector2 _artifactPosition;
+    private bool _swordPickedUp;
+    private Vector2 _swordPosition;
     private Vector2 _spawnPosition;
     private GameLogic _gameLogicScript;
     private HighlightOnPressScript _highlightOnPressScript;
@@ -30,6 +33,8 @@ public class Character : MonoBehaviour
         _movementChangeSet = false;
         _artifactPickedUp = false;
         _artifactPosition = Vector2.zero;
+        _swordPickedUp = false;
+        _swordPosition = Vector2.zero;
         _spawnPosition = transform.position;
 
         _highlightOnPressScript = GameObject.FindGameObjectWithTag(KeyHelpPanelTagName).GetComponent<HighlightOnPressScript>();
@@ -127,16 +132,16 @@ public class Character : MonoBehaviour
     {
         if (other.gameObject.tag == "Player")
         {
-            //TODO do something, either get killed and restart at beginning
-
             if (TeamNo != other.gameObject.GetComponent<Character>().TeamNo)
             {
-                //TODO do stuff, drop artifact, etc.
                 if (_artifactPickedUp)
                 {
                     DropArtifact();
                 }
-                RespawnCharacter();
+                else if (!_swordPickedUp)
+                {
+                    RespawnCharacter();
+                }
             }
         }
         else if (other.gameObject.tag == "artifact")
@@ -146,6 +151,15 @@ public class Character : MonoBehaviour
                 Vector2 artifactPosition = other.transform.position;
                 Destroy(other.gameObject);
                 PickupArtifact(artifactPosition);
+            }
+        }
+        else if (other.gameObject.tag == "sword")
+        {
+            if (!_swordPickedUp)
+            {
+                Vector2 swordPosition = other.transform.position;
+                Destroy(other.gameObject);
+                PickupSword(swordPosition);
             }
         }
         else if (other.gameObject.tag == "Finish")
@@ -168,6 +182,11 @@ public class Character : MonoBehaviour
 
     private void PickupArtifact(Vector2 artifactPosition)
     {
+        if (_swordPickedUp)
+        {
+            DropSword();
+        }
+
         transform.GetChild(0).GetComponent<SpriteRenderer>().enabled = true;
         _artifactPickedUp = true;
         _artifactPosition = artifactPosition;
@@ -182,5 +201,28 @@ public class Character : MonoBehaviour
         
         _gameLogicScript.ReplenishArtifact(_artifactPosition);
         _artifactPosition = Vector2.zero;
+    }
+
+    private void PickupSword(Vector2 swordPosition)
+    {
+        if (_artifactPickedUp)
+        {
+            DropArtifact();
+        }
+
+        transform.GetChild(1).GetComponent<SpriteRenderer>().enabled = true;
+        _swordPickedUp = true;
+        _swordPosition = swordPosition;
+        CharacterSpeed *= SwordSpeedCoef;
+    }
+
+    private void DropSword()
+    {
+        transform.GetChild(1).GetComponent<SpriteRenderer>().enabled = false;
+        _swordPickedUp = false;
+        CharacterSpeed /= SwordSpeedCoef;
+
+        _gameLogicScript.ReplenishSword(_swordPosition);
+        _swordPosition = Vector2.zero;
     }
 }

@@ -110,7 +110,7 @@ public class GameLogic : MonoBehaviour
             {1,0,1,1,0,1,1,1,0,1,0,1,0,1,0,1},
             {1,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0},
             {1,0,1,1,1,0,1,1,1,1,1,0,1,1,0,1},
-            {1,0,0,0,0,0,0,0,0,0,1,0,1,7,7,7},
+            {1,8,0,0,0,0,0,0,0,0,1,0,1,7,7,7},
             {1,1,1,1,1,1,1,0,1,0,1,0,0,7,7,7},
             {1,1,1,1,1,0,0,0,1,0,0,0,1,7,7,7},
             {1,1,1,1,1,0,1,0,1,0,1,0,1,7,7,7},
@@ -151,6 +151,7 @@ public class GameLogic : MonoBehaviour
                     case 1:
                     case 6:
                     case 7:
+                    case 8:
                         go = Instantiate(sceneObjectPrefabs[code - 1], coords, Quaternion.identity);
                         break;
                     default:
@@ -193,6 +194,11 @@ public class GameLogic : MonoBehaviour
     public void ReplenishArtifact(Vector2 artifactPosition)
     {
         GameObject go = Instantiate(sceneObjectPrefabs[5], artifactPosition, Quaternion.identity);
+    }
+
+    public void ReplenishSword(Vector2 swordPosition)
+    {
+        GameObject go = Instantiate(sceneObjectPrefabs[7], swordPosition, Quaternion.identity);
     }
 
     public void ArtifactScored(int teamNo)
