@@ -22,7 +22,7 @@ public class GameLogic : MonoBehaviour
     public int Team0Score { get; private set; }
     public int Team1Score { get; private set; }
     public bool GameStarted { get; private set; }
-    public static int GameEndArtifactCount = 1;
+    public static int GameEndArtifactCount = 5;
 
     private Map _activeMap;
     private GameObject[] _characters;
@@ -110,8 +110,8 @@ public class GameLogic : MonoBehaviour
             {1,0,1,1,0,1,1,1,0,1,0,1,0,1,0,1},
             {1,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0},
             {1,0,1,1,1,0,1,1,1,1,1,0,1,1,0,1},
-            {1,8,0,0,0,0,0,0,0,0,1,0,1,7,7,7},
-            {1,1,1,1,1,1,1,0,1,0,1,0,0,7,7,7},
+            {1,0,0,0,0,0,0,0,0,0,1,0,1,7,7,7},
+            {1,1,1,1,1,1,1,8,1,0,1,0,0,7,7,7},
             {1,1,1,1,1,0,0,0,1,0,0,0,1,7,7,7},
             {1,1,1,1,1,0,1,0,1,0,1,0,1,7,7,7},
             {1,0,0,0,0,0,1,0,1,0,1,0,1,1,0,1},

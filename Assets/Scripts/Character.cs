@@ -138,7 +138,12 @@ public class Character : MonoBehaviour
                 {
                     DropArtifact();
                 }
-                else if (!_swordPickedUp)
+
+                if (_swordPickedUp)
+                {
+                    DropSword();
+                }
+                else
                 {
                     RespawnCharacter();
                 }
