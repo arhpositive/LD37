@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.Assertions;
+using UnityEngine.SceneManagement;
 
 public class Map
 {
@@ -13,31 +14,86 @@ public class Map
     }
 }
 
-public class MapGen : MonoBehaviour
+public class GameLogic : MonoBehaviour
 {
     public GameObject[] sceneObjectPrefabs;
 
     public int Team0Score { get; private set; }
     public int Team1Score { get; private set; }
+    public bool GameStarted { get; private set; }
+    public static int GameEndArtifactCount = 1;
 
     private Map _activeMap;
+    private GameObject[] _characters;
+    private StartGamePanelScript _startGamePanelScript;
     private EndGamePanelScript _endGamePanelScript;
+    private bool _gameOnHold;
+    
+    private bool _gameEnded;
+
+    private void Awake()
+    {
+        _startGamePanelScript = GameObject.FindGameObjectWithTag("StartGamePanel").GetComponent<StartGamePanelScript>();
+        GameObject endGamePanel = GameObject.FindGameObjectWithTag("EndGamePanel");
+        _endGamePanelScript = endGamePanel.GetComponent<EndGamePanelScript>();
+    }
 
     // Use this for initialization
     private void Start ()
     {
-        GameObject endGamePanel = GameObject.FindGameObjectWithTag("EndGamePanel");
-        _endGamePanelScript = endGamePanel.GetComponent<EndGamePanelScript>();
-        endGamePanel.SetActive(false);
         CreateMaps();
         PlayNextMap();
+        PauseAction();
+        GameStarted = false;
+        _gameEnded = false;
     }
 
     // Update is called once per frame
     private void Update ()
     {
-		
+        if (_gameOnHold && !GameStarted)
+        {
+            bool canStart = true;
+            for (int i = 0; i < _characters.Length; ++i)
+            {
+                if (_characters[i].GetComponent<Character>().CurrentMoveDir == Vector2.zero)
+                {
+                    canStart = false;
+                    break;
+                }
+            }
+            if (canStart)
+            {
+                ContinueAction();
+                GameStarted = true;
+                _startGamePanelScript.gameObject.SetActive(false);
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.Pause) && GameStarted && !_gameEnded)
+        {
+            if (_gameOnHold)
+            {
+                ContinueAction();
+            }
+            else
+            {
+                PauseAction();
+            }
+        }
 	}
+
+    private void PauseAction()
+    {
+        Time.timeScale = 0.0f;
+        _gameOnHold = true;
+    }
+
+    private void ContinueAction()
+    {
+        Time.timeScale = 1.0f;
+        _gameOnHold = false;
+    }
 
     private void CreateMaps()
     {
@@ -103,10 +159,12 @@ public class MapGen : MonoBehaviour
             }
         }
 
+        int playerCount = _activeMap.PlayerCoords.GetLength(0);
+        _characters = new GameObject[playerCount];
         for (int i = 0; i < _activeMap.PlayerCoords.GetLength(0); ++i)
         {
             Vector2 coords = new Vector2(_activeMap.PlayerCoords[i, 0], _activeMap.PlayerCoords[i, 1]);
-            GameObject player = Instantiate(sceneObjectPrefabs[1+i], coords, Quaternion.identity); //TODO fix this stupid index
+            _characters[i] = Instantiate(sceneObjectPrefabs[1+i], coords, Quaternion.identity);
         }
         
     }
@@ -148,11 +206,23 @@ public class MapGen : MonoBehaviour
             Team1Score += 1;
         }
 
-        if (Team0Score == 1 || Team1Score == 1) //TODO fix end game condition
+        if (Team0Score >= GameEndArtifactCount || Team1Score >= GameEndArtifactCount)
         {
             //end game trigger
-            //TODO stop the game, display a frame with buttons restart and return to menu
-            _endGamePanelScript.ShowEndGamePanel(Team0Score, Team1Score);
+            GameEnd();
         }
+    }
+
+    private void GameEnd()
+    {
+        //TODO stop the game, display a frame with buttons restart and return to menu
+        PauseAction();
+        _gameEnded = true;
+        _endGamePanelScript.ShowEndGamePanel(Team0Score, Team1Score);
+    }
+
+    public void RestartGame()
+    {
+        SceneManager.LoadScene(0, LoadSceneMode.Single);
     }
 }

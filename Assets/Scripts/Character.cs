@@ -18,12 +18,12 @@ public class Character : MonoBehaviour
     private bool _artifactPickedUp;
     private Vector2 _artifactPosition;
     private Vector2 _spawnPosition;
-    private MapGen _mapGenScript;
+    private GameLogic _gameLogicScript;
 
     // Use this for initialization
     void Start()
     {
-        _mapGenScript = Camera.main.GetComponent<MapGen>();
+        _gameLogicScript = Camera.main.GetComponent<GameLogic>();
         _movementChangeSet = false;
         _artifactPickedUp = false;
         _artifactPosition = Vector2.zero;
@@ -59,18 +59,29 @@ public class Character : MonoBehaviour
         if ((verticalInput == 0.0f && Mathf.Abs(horizontalInput) == 1.0f) ||
             (horizontalInput == 0.0f && Mathf.Abs(verticalInput) == 1.0f))
         {
+
+            //skip rest of update if the game has not begun yet
+            if (!_gameLogicScript.GameStarted)
+            {
+                CurrentMoveDir = new Vector2(horizontalInput, verticalInput);
+                NextMoveDir = CurrentMoveDir;
+                return;
+            }
+
             _movementChangeSet = false;
             NextMoveDir = new Vector2(horizontalInput, verticalInput);
         }
+
+        
 
         //we've finished a movement and our current move direction changed
         if (!_movementChangeSet && CurrentMoveDir != NextMoveDir)
         {
             //if we can move on to next block
-            bool movementPossible = _mapGenScript.IsMovementPossible(futureX, futureY);
+            bool movementPossible = _gameLogicScript.IsMovementPossible(futureX, futureY);
             if (movementPossible)
             {
-                if (_mapGenScript.IsMovementPossible(futureX + Mathf.RoundToInt(NextMoveDir.x),
+                if (_gameLogicScript.IsMovementPossible(futureX + Mathf.RoundToInt(NextMoveDir.x),
                     futureY + Mathf.RoundToInt(NextMoveDir.y)))
                 {
                     _movementChangeSet = true;
@@ -99,7 +110,7 @@ public class Character : MonoBehaviour
         else
         {
             //constantly move with the direction applied to it
-            if (_mapGenScript.IsMovementPossible(futureX, futureY))
+            if (_gameLogicScript.IsMovementPossible(futureX, futureY))
             {
                 transform.Translate(Time.deltaTime*CharacterSpeed*CurrentMoveDir);
             }
@@ -136,7 +147,7 @@ public class Character : MonoBehaviour
             if (_artifactPickedUp)
             {
                 DropArtifact();
-                _mapGenScript.ArtifactScored(TeamNo);
+                _gameLogicScript.ArtifactScored(TeamNo);
                 //TODO gain points
             }
         }
@@ -163,7 +174,7 @@ public class Character : MonoBehaviour
         _artifactPickedUp = false;
         CharacterSpeed /= ArtifactSpeedCoef;
         
-        _mapGenScript.ReplenishArtifact(_artifactPosition);
+        _gameLogicScript.ReplenishArtifact(_artifactPosition);
         _artifactPosition = Vector2.zero;
     }
 }

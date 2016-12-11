@@ -8,24 +8,24 @@ namespace ui
     {
         public int TeamNo;
         private Text _teamScoreText;
-        private MapGen _mapGenScript;
+        private GameLogic _gameLogicScript;
 
         private void Start()
         {
             _teamScoreText = gameObject.GetComponent<Text>();
-            _mapGenScript = Camera.main.GetComponent<MapGen>();
+            _gameLogicScript = Camera.main.GetComponent<GameLogic>();
         }
 
         private void Update()
         {
             if (TeamNo == 0)
             {
-                _teamScoreText.text = _mapGenScript.Team0Score.ToString();
+                _teamScoreText.text = _gameLogicScript.Team0Score.ToString();
             }
             else
             {
                 Assert.IsTrue(TeamNo == 1);
-                _teamScoreText.text = _mapGenScript.Team1Score.ToString();
+                _teamScoreText.text = _gameLogicScript.Team1Score.ToString();
             }
         }
     }

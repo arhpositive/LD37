@@ -3,8 +3,9 @@ using UnityEngine.UI;
 
 public class EndGamePanelScript : MonoBehaviour
 {
-    private Text _endGameText;
     private Image _endGamePanelImage;
+    private Text[] _endGameTexts;
+    private GameLogic _gameLogicScript;
 
     public Color Team0Color;
     public Color Team1Color;
@@ -12,10 +13,10 @@ public class EndGamePanelScript : MonoBehaviour
     // Use this for initialization
     void Start ()
     {
-        _endGameText = gameObject.GetComponentInChildren<Text>();
-        //TODO use a different way to get both texts!!
-        //gameObject.GetComponent<Text>();
+        _endGameTexts = gameObject.GetComponentsInChildren<Text>();
         _endGamePanelImage = gameObject.GetComponent<Image>();
+        _gameLogicScript = Camera.main.GetComponent<GameLogic>();
+        gameObject.SetActive(false);
     }
 	
 	// Update is called once per frame
@@ -26,17 +27,24 @@ public class EndGamePanelScript : MonoBehaviour
 
     public void ShowEndGamePanel(int team0Score, int team1Score)
     {
-        _endGameText.text = "Congratulations to ";
+        _endGameTexts[0].text = "Congratulations to Team";
         if (team0Score > team1Score)
         {
             _endGamePanelImage.color = Team0Color;
-            _endGameText.text += " Team Yellow!";
+            
+            _endGameTexts[0].text += " Cyan!";
         }
         else
         {
             _endGamePanelImage.color = Team1Color;
-            _endGameText.text += " Team Cyan!";
+            _endGameTexts[0].text += " Yellow!";
         }
+        _endGameTexts[1].text = team0Score.ToString() + " - " + team1Score.ToString();
         gameObject.SetActive(true);
+    }
+
+    public void OnRestartButtonClicked()
+    {
+        _gameLogicScript.RestartGame();
     }
 }
