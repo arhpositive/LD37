@@ -1,12 +1,27 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.Assertions;
+
+public class Map
+{
+    public int[,] MapDesign;
+    public int[,] PlayerCoords;
+
+    public Map(int[,] mapDesign, int[,] playerCoords)
+    {
+        MapDesign = mapDesign;
+        PlayerCoords = playerCoords;
+    }
+}
 
 public class MapGen : MonoBehaviour
 {
     public GameObject[] sceneObjectPrefabs;
+
+    private Map ActiveMap;
 
     public int[,] CurrentMap { get; private set; }
 
@@ -28,19 +43,19 @@ public class MapGen : MonoBehaviour
         int[,] map1 =
         {
             {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-            {1,1,1,0,0,0,0,0,0,1,1,1,1,1,1,1},
+            {1,1,1,6,0,0,0,0,0,1,1,1,1,1,1,1},
             {1,1,1,0,1,1,1,1,0,1,0,0,0,0,0,0},
             {1,1,1,0,1,0,0,0,0,0,0,1,0,1,1,1},
             {1,1,1,0,1,0,1,1,1,1,0,1,0,0,0,0},
-            {1,6,0,0,0,0,0,0,0,1,0,1,0,1,0,1},
+            {1,0,0,0,0,0,0,0,0,1,0,1,0,1,0,1},
             {1,0,1,1,0,1,1,1,0,1,0,1,0,1,0,1},
             {1,0,1,1,0,1,1,1,0,1,0,1,0,1,0,1},
             {1,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0},
             {1,0,1,1,1,0,1,1,1,1,1,0,1,1,0,1},
-            {1,0,0,0,0,0,0,0,0,0,1,0,1,0,2,0},
-            {1,1,1,1,1,1,1,0,1,0,1,0,0,0,0,0},
-            {1,1,1,1,1,0,0,0,1,0,0,0,1,0,0,0},
-            {1,1,1,1,1,0,1,0,1,0,1,0,1,0,4,0},
+            {1,0,0,0,0,0,0,0,0,0,1,0,1,7,7,7},
+            {1,1,1,1,1,1,1,0,1,0,1,0,0,7,7,7},
+            {1,1,1,1,1,0,0,0,1,0,0,0,1,7,7,7},
+            {1,1,1,1,1,0,1,0,1,0,1,0,1,7,7,7},
             {1,0,0,0,0,0,1,0,1,0,1,0,1,1,0,1},
             {1,0,1,1,1,0,1,0,0,0,1,0,0,0,0,1},
             {1,0,0,0,1,0,1,0,1,1,1,0,1,1,0,1},
@@ -52,16 +67,18 @@ public class MapGen : MonoBehaviour
             {1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0},
             {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
         };
+        int[,] playerCoords = new int[4,2] { {14,10}, {17,10}, {14,13}, {17,13} };
 
-        CurrentMap = map1;
+        ActiveMap = new Map(map1, playerCoords);
     }
 
     private void PlayNextMap()
     {
-        int yDim = CurrentMap.GetLength(0);
+
+        int yDim = ActiveMap.MapDesign.GetLength(0);
         for (int y = 0; y < yDim; ++y)
         {
-            int xDim = CurrentMap.GetLength(1);
+            int xDim = ActiveMap.MapDesign.GetLength(1);
             for (int x = 0; x < xDim * 2; ++x)
             {
                 GameObject go;
@@ -73,12 +90,8 @@ public class MapGen : MonoBehaviour
                         break;
                     case 1:
                     case 6:
+                    case 7:
                         go = Instantiate(sceneObjectPrefabs[code - 1], coords, Quaternion.identity);
-                        break;
-                    case 2:
-                    case 4:
-                        int index = x >= xDim ? code - 1 : code;
-                        go = Instantiate(sceneObjectPrefabs[index], coords, Quaternion.identity);
                         break;
                     default:
                         Assert.IsTrue(false);
@@ -86,6 +99,13 @@ public class MapGen : MonoBehaviour
                 }
             }
         }
+
+        for (int i = 0; i < ActiveMap.PlayerCoords.GetLength(0); ++i)
+        {
+            Vector2 coords = new Vector2(ActiveMap.PlayerCoords[i, 0], ActiveMap.PlayerCoords[i, 1]);
+            GameObject player = Instantiate(sceneObjectPrefabs[1+i], coords, Quaternion.identity); //TODO fix this stupid index
+        }
+        
     }
 
     public bool IsMovementPossible(int x, int y)
@@ -99,12 +119,17 @@ public class MapGen : MonoBehaviour
 
     private int GetMapValueFromCoords(int xCoord, int yCoord)
     {
-        int yDim = CurrentMap.GetLength(0);
-        int xDim = CurrentMap.GetLength(1);
+        int yDim = ActiveMap.MapDesign.GetLength(0);
+        int xDim = ActiveMap.MapDesign.GetLength(1);
         bool useMirror = xCoord >= xDim;
         int mapX = useMirror ? 2 * xDim - 1 - xCoord : xCoord;
         int mapY = yDim - (yCoord + 1);
 
-        return CurrentMap[mapY, mapX];
+        return ActiveMap.MapDesign[mapY, mapX];
+    }
+
+    public void ReplenishArtifact(Vector2 artifactPosition)
+    {
+        GameObject go = Instantiate(sceneObjectPrefabs[5], artifactPosition, Quaternion.identity);
     }
 }

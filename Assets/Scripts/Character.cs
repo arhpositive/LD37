@@ -6,14 +6,18 @@ using UnityEngine;
 public class Character : MonoBehaviour
 {
     public float CharacterSpeed;
+    public float ArtifactSpeedCoef;
     public Vector2 NextMoveDir;
     public Vector2 CurrentMoveDir;
     public string HorizontalAxisName;
     public string VerticalAxisName;
+    public int TeamNo;
 
     private bool _movementChangeSet;
     private Vector3 _newPosition;
     private bool _artifactPickedUp;
+    private Vector2 _artifactPosition;
+    private Vector2 _spawnPosition;
     private MapGen _mapGenScript;
 
     // Use this for initialization
@@ -21,6 +25,9 @@ public class Character : MonoBehaviour
     {
         _mapGenScript = Camera.main.GetComponent<MapGen>();
         _movementChangeSet = false;
+        _artifactPickedUp = false;
+        _artifactPosition = Vector2.zero;
+        _spawnPosition = transform.position;
     }
 
     // Update is called once per frame
@@ -102,10 +109,16 @@ public class Character : MonoBehaviour
     {
         if (other.gameObject.tag == "Player")
         {
-            //TODO do stuff, drop artifact, etc.
-            if (_artifactPickedUp)
+            //TODO do something, either get killed and restart at beginning
+
+            if (TeamNo != other.gameObject.GetComponent<Character>().TeamNo)
             {
-                DropArtifact();
+                //TODO do stuff, drop artifact, etc.
+                if (_artifactPickedUp)
+                {
+                    DropArtifact();
+                }
+                RespawnCharacter();
             }
         }
         else if (other.gameObject.tag == "artifact")
@@ -118,24 +131,45 @@ public class Character : MonoBehaviour
             //eventually we'll still need to spawn a new artifact after this is gone
             if (!_artifactPickedUp)
             {
+                Vector2 artifactPosition = other.transform.position;
                 Destroy(other.gameObject);
-                PickupArtifact();
+                PickupArtifact(artifactPosition);
+            }
+        }
+        else if (other.gameObject.tag == "Finish")
+        {
+            if (_artifactPickedUp)
+            {
+                DropArtifact();
+                //TODO gain points
             }
         }
     }
 
-    private void PickupArtifact()
+    private void RespawnCharacter()
+    {
+        transform.position = _spawnPosition;
+        CurrentMoveDir = Vector2.zero;
+        NextMoveDir = Vector2.zero;
+    }
+
+    private void PickupArtifact(Vector2 artifactPosition)
     {
         transform.GetChild(0).GetComponent<SpriteRenderer>().enabled = true;
         _artifactPickedUp = true;
+        _artifactPosition = artifactPosition;
+        CharacterSpeed *= ArtifactSpeedCoef;
     }
 
     private void DropArtifact()
     {
         transform.GetChild(0).GetComponent<SpriteRenderer>().enabled = false;
         _artifactPickedUp = false;
+        CharacterSpeed /= ArtifactSpeedCoef;
 
         //TODO either drop the artifact on the ground
         //OR reset the artifact by notifying map gen script
+        _mapGenScript.ReplenishArtifact(_artifactPosition);
+        _artifactPosition = Vector2.zero;
     }
 }
