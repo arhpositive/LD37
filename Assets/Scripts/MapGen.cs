@@ -20,11 +20,15 @@ public class MapGen : MonoBehaviour
     public int Team0Score { get; private set; }
     public int Team1Score { get; private set; }
 
-    private Map ActiveMap;
+    private Map _activeMap;
+    private EndGamePanelScript _endGamePanelScript;
 
     // Use this for initialization
     private void Start ()
     {
+        GameObject endGamePanel = GameObject.FindGameObjectWithTag("EndGamePanel");
+        _endGamePanelScript = endGamePanel.GetComponent<EndGamePanelScript>();
+        endGamePanel.SetActive(false);
         CreateMaps();
         PlayNextMap();
     }
@@ -66,7 +70,7 @@ public class MapGen : MonoBehaviour
         };
         int[,] playerCoords = new int[4,2] { {14,10}, {17,10}, {14,13}, {17,13} };
 
-        ActiveMap = new Map(map1, playerCoords);
+        _activeMap = new Map(map1, playerCoords);
     }
 
     private void PlayNextMap()
@@ -74,10 +78,10 @@ public class MapGen : MonoBehaviour
         Team0Score = 0;
         Team1Score = 0;
 
-        int yDim = ActiveMap.MapDesign.GetLength(0);
+        int yDim = _activeMap.MapDesign.GetLength(0);
         for (int y = 0; y < yDim; ++y)
         {
-            int xDim = ActiveMap.MapDesign.GetLength(1);
+            int xDim = _activeMap.MapDesign.GetLength(1);
             for (int x = 0; x < xDim * 2; ++x)
             {
                 GameObject go;
@@ -99,9 +103,9 @@ public class MapGen : MonoBehaviour
             }
         }
 
-        for (int i = 0; i < ActiveMap.PlayerCoords.GetLength(0); ++i)
+        for (int i = 0; i < _activeMap.PlayerCoords.GetLength(0); ++i)
         {
-            Vector2 coords = new Vector2(ActiveMap.PlayerCoords[i, 0], ActiveMap.PlayerCoords[i, 1]);
+            Vector2 coords = new Vector2(_activeMap.PlayerCoords[i, 0], _activeMap.PlayerCoords[i, 1]);
             GameObject player = Instantiate(sceneObjectPrefabs[1+i], coords, Quaternion.identity); //TODO fix this stupid index
         }
         
@@ -118,13 +122,13 @@ public class MapGen : MonoBehaviour
 
     private int GetMapValueFromCoords(int xCoord, int yCoord)
     {
-        int yDim = ActiveMap.MapDesign.GetLength(0);
-        int xDim = ActiveMap.MapDesign.GetLength(1);
+        int yDim = _activeMap.MapDesign.GetLength(0);
+        int xDim = _activeMap.MapDesign.GetLength(1);
         bool useMirror = xCoord >= xDim;
         int mapX = useMirror ? 2 * xDim - 1 - xCoord : xCoord;
         int mapY = yDim - (yCoord + 1);
 
-        return ActiveMap.MapDesign[mapY, mapX];
+        return _activeMap.MapDesign[mapY, mapX];
     }
 
     public void ReplenishArtifact(Vector2 artifactPosition)
@@ -144,5 +148,11 @@ public class MapGen : MonoBehaviour
             Team1Score += 1;
         }
 
+        if (Team0Score == 1 || Team1Score == 1) //TODO fix end game condition
+        {
+            //end game trigger
+            //TODO stop the game, display a frame with buttons restart and return to menu
+            _endGamePanelScript.ShowEndGamePanel(Team0Score, Team1Score);
+        }
     }
 }

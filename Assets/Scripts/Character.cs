@@ -54,6 +54,7 @@ public class Character : MonoBehaviour
         //take input and find out next move direction
         float horizontalInput = Input.GetAxisRaw(HorizontalAxisName);
         float verticalInput = Input.GetAxisRaw(VerticalAxisName);
+        //TODO better adjust keyboard controls wasd fcvb uhjk arrows
         
         if ((verticalInput == 0.0f && Mathf.Abs(horizontalInput) == 1.0f) ||
             (horizontalInput == 0.0f && Mathf.Abs(verticalInput) == 1.0f))
@@ -123,12 +124,6 @@ public class Character : MonoBehaviour
         }
         else if (other.gameObject.tag == "artifact")
         {
-            //TODO artifact stuff
-            //attach artifact to player
-
-            //destroy game object
-            //enable artifact object on player character, switch a boolean on
-            //eventually we'll still need to spawn a new artifact after this is gone
             if (!_artifactPickedUp)
             {
                 Vector2 artifactPosition = other.transform.position;
@@ -167,9 +162,7 @@ public class Character : MonoBehaviour
         transform.GetChild(0).GetComponent<SpriteRenderer>().enabled = false;
         _artifactPickedUp = false;
         CharacterSpeed /= ArtifactSpeedCoef;
-
-        //TODO either drop the artifact on the ground
-        //OR reset the artifact by notifying map gen script
+        
         _mapGenScript.ReplenishArtifact(_artifactPosition);
         _artifactPosition = Vector2.zero;
     }
