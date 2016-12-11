@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using ui;
 using UnityEngine;
 
 public class Character : MonoBehaviour
@@ -12,6 +13,7 @@ public class Character : MonoBehaviour
     public string HorizontalAxisName;
     public string VerticalAxisName;
     public int TeamNo;
+    public string KeyHelpPanelTagName;
 
     private bool _movementChangeSet;
     private Vector3 _newPosition;
@@ -19,6 +21,7 @@ public class Character : MonoBehaviour
     private Vector2 _artifactPosition;
     private Vector2 _spawnPosition;
     private GameLogic _gameLogicScript;
+    private HighlightOnPressScript _highlightOnPressScript;
 
     // Use this for initialization
     void Start()
@@ -28,6 +31,8 @@ public class Character : MonoBehaviour
         _artifactPickedUp = false;
         _artifactPosition = Vector2.zero;
         _spawnPosition = transform.position;
+
+        _highlightOnPressScript = GameObject.FindGameObjectWithTag(KeyHelpPanelTagName).GetComponent<HighlightOnPressScript>();
     }
 
     // Update is called once per frame
@@ -65,6 +70,7 @@ public class Character : MonoBehaviour
             {
                 CurrentMoveDir = new Vector2(horizontalInput, verticalInput);
                 NextMoveDir = CurrentMoveDir;
+                _highlightOnPressScript.HighlightButtonByMoveDir(CurrentMoveDir);
                 return;
             }
 

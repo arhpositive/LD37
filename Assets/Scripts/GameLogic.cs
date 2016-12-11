@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using ui;
+using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.SceneManagement;
 
@@ -124,7 +125,7 @@ public class GameLogic : MonoBehaviour
             {1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0},
             {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
         };
-        int[,] playerCoords = new int[4,2] { {14,10}, {17,10}, {14,13}, {17,13} };
+        int[,] playerCoords = new int[4,2] { {14,10}, {17,10}, {14,12}, {17,12} };
 
         _activeMap = new Map(map1, playerCoords);
     }
