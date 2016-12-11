@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using JetBrains.Annotations;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Assertions;
 
 public class Map
@@ -21,9 +17,10 @@ public class MapGen : MonoBehaviour
 {
     public GameObject[] sceneObjectPrefabs;
 
-    private Map ActiveMap;
+    public int Team0Score { get; private set; }
+    public int Team1Score { get; private set; }
 
-    public int[,] CurrentMap { get; private set; }
+    private Map ActiveMap;
 
     // Use this for initialization
     private void Start ()
@@ -74,6 +71,8 @@ public class MapGen : MonoBehaviour
 
     private void PlayNextMap()
     {
+        Team0Score = 0;
+        Team1Score = 0;
 
         int yDim = ActiveMap.MapDesign.GetLength(0);
         for (int y = 0; y < yDim; ++y)
@@ -131,5 +130,19 @@ public class MapGen : MonoBehaviour
     public void ReplenishArtifact(Vector2 artifactPosition)
     {
         GameObject go = Instantiate(sceneObjectPrefabs[5], artifactPosition, Quaternion.identity);
+    }
+
+    public void ArtifactScored(int teamNo)
+    {
+        if (teamNo == 0)
+        {
+            Team0Score += 1;
+        }
+        else
+        {
+            Assert.IsTrue(teamNo == 1);
+            Team1Score += 1;
+        }
+
     }
 }

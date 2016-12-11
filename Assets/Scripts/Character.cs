@@ -141,6 +141,7 @@ public class Character : MonoBehaviour
             if (_artifactPickedUp)
             {
                 DropArtifact();
+                _mapGenScript.ArtifactScored(TeamNo);
                 //TODO gain points
             }
         }
