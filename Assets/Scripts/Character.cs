@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using ui;
+﻿using ui;
 using UnityEngine;
 
 public class Character : MonoBehaviour
@@ -11,8 +8,10 @@ public class Character : MonoBehaviour
     public float SwordSpeedCoef;
     public Vector2 NextMoveDir;
     public Vector2 CurrentMoveDir;
-    public string HorizontalAxisName;
-    public string VerticalAxisName;
+    public KeyCode UpKeyCode;
+    public KeyCode DownKeyCode;
+    public KeyCode LeftKeyCode;
+    public KeyCode RightKeyCode;
     public int TeamNo;
     public string KeyHelpPanelTagName;
 
@@ -62,28 +61,38 @@ public class Character : MonoBehaviour
         int futureY = currentY + moveDirY;
 
         //take input and find out next move direction
-        float horizontalInput = Input.GetAxisRaw(HorizontalAxisName);
-        float verticalInput = Input.GetAxisRaw(VerticalAxisName);
-        //TODO better adjust keyboard controls wasd fcvb uhjk arrows
-        
-        if ((verticalInput == 0.0f && Mathf.Abs(horizontalInput) == 1.0f) ||
-            (horizontalInput == 0.0f && Mathf.Abs(verticalInput) == 1.0f))
+        Vector2 capturedMoveDir = Vector2.zero;
+        if (Input.GetKeyDown(UpKeyCode))
         {
-
+            capturedMoveDir = new Vector2(0, 1);
+        }
+        else if (Input.GetKeyDown(DownKeyCode))
+        {
+            capturedMoveDir = new Vector2(0, -1);
+        }
+        else if (Input.GetKeyDown(LeftKeyCode))
+        {
+            capturedMoveDir = new Vector2(-1, 0);
+            
+        }
+        else if (Input.GetKeyDown(RightKeyCode))
+        {
+            capturedMoveDir = new Vector2(1, 0);
+        }
+        
+        if (capturedMoveDir != Vector2.zero)
+        {
             //skip rest of update if the game has not begun yet
             if (!_gameLogicScript.GameStarted)
             {
-                CurrentMoveDir = new Vector2(horizontalInput, verticalInput);
-                NextMoveDir = CurrentMoveDir;
+                CurrentMoveDir = NextMoveDir = capturedMoveDir;
                 _highlightOnPressScript.HighlightButtonByMoveDir(CurrentMoveDir);
                 return;
             }
 
             _movementChangeSet = false;
-            NextMoveDir = new Vector2(horizontalInput, verticalInput);
+            NextMoveDir = capturedMoveDir;
         }
-
-        
 
         //we've finished a movement and our current move direction changed
         if (!_movementChangeSet && CurrentMoveDir != NextMoveDir)
@@ -173,7 +182,6 @@ public class Character : MonoBehaviour
             {
                 DropArtifact();
                 _gameLogicScript.ArtifactScored(TeamNo);
-                //TODO gain points
             }
         }
     }

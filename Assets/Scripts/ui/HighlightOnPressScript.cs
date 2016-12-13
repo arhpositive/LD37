@@ -22,7 +22,7 @@ namespace ui
         public void HighlightButtonByMoveDir(Vector2 moveDir)
         {
             ClearHighlights();
-            int index = -1;
+            int index;
             if (moveDir == Vector2.up)
             {
                 index = 0;
@@ -45,9 +45,9 @@ namespace ui
 
         private void ClearHighlights()
         {
-            for (int i = 0; i < _keyHelpButtons.Length; ++i)
+            foreach (Button t in _keyHelpButtons)
             {
-                _keyHelpButtons[i].GetComponent<Image>().color = _keyHelpButtons[i].colors.normalColor;
+                t.GetComponent<Image>().color = t.colors.normalColor;
             }
         }
     }

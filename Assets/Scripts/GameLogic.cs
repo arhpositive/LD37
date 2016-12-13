@@ -17,7 +17,7 @@ public class Map
 
 public class GameLogic : MonoBehaviour
 {
-    public GameObject[] sceneObjectPrefabs;
+    public GameObject[] SceneObjectPrefabs;
 
     public int Team0Score { get; private set; }
     public int Team1Score { get; private set; }
@@ -26,7 +26,7 @@ public class GameLogic : MonoBehaviour
 
     private Map _activeMap;
     private GameObject[] _characters;
-    private StartGamePanelScript _startGamePanelScript;
+    private GameObject _startGamePanelObject;
     private EndGamePanelScript _endGamePanelScript;
     private bool _gameOnHold;
     
@@ -34,7 +34,7 @@ public class GameLogic : MonoBehaviour
 
     private void Awake()
     {
-        _startGamePanelScript = GameObject.FindGameObjectWithTag("StartGamePanel").GetComponent<StartGamePanelScript>();
+        _startGamePanelObject = GameObject.FindGameObjectWithTag("StartGamePanel");
         GameObject endGamePanel = GameObject.FindGameObjectWithTag("EndGamePanel");
         _endGamePanelScript = endGamePanel.GetComponent<EndGamePanelScript>();
     }
@@ -67,7 +67,7 @@ public class GameLogic : MonoBehaviour
             {
                 ContinueAction();
                 GameStarted = true;
-                _startGamePanelScript.gameObject.SetActive(false);
+                _startGamePanelObject.SetActive(false);
             }
         }
 
@@ -125,7 +125,7 @@ public class GameLogic : MonoBehaviour
             {1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0},
             {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
         };
-        int[,] playerCoords = new int[4,2] { {14,10}, {17,10}, {14,12}, {17,12} };
+        int[,] playerCoords = { {14,10}, {17,10}, {14,12}, {17,12} };
 
         _activeMap = new Map(map1, playerCoords);
     }
@@ -141,7 +141,6 @@ public class GameLogic : MonoBehaviour
             int xDim = _activeMap.MapDesign.GetLength(1);
             for (int x = 0; x < xDim * 2; ++x)
             {
-                GameObject go;
                 Vector2 coords = new Vector2(x, y);
                 int code = GetMapValueFromCoords(x, y);
                 switch (code)
@@ -149,12 +148,12 @@ public class GameLogic : MonoBehaviour
                     case 0:
                     case 1:
                     case 7:
-                        go = Instantiate(sceneObjectPrefabs[code], coords, Quaternion.identity);
+                        Instantiate(SceneObjectPrefabs[code], coords, Quaternion.identity);
                         break;
                     case 6:
                     case 8:
-                        go = Instantiate(sceneObjectPrefabs[0], coords, Quaternion.identity);
-                        go = Instantiate(sceneObjectPrefabs[code], coords, Quaternion.identity);
+                        Instantiate(SceneObjectPrefabs[0], coords, Quaternion.identity);
+                        Instantiate(SceneObjectPrefabs[code], coords, Quaternion.identity);
                         break;
                     default:
                         Assert.IsTrue(false);
@@ -168,7 +167,7 @@ public class GameLogic : MonoBehaviour
         for (int i = 0; i < _activeMap.PlayerCoords.GetLength(0); ++i)
         {
             Vector2 coords = new Vector2(_activeMap.PlayerCoords[i, 0], _activeMap.PlayerCoords[i, 1]);
-            _characters[i] = Instantiate(sceneObjectPrefabs[2+i], coords, Quaternion.identity);
+            _characters[i] = Instantiate(SceneObjectPrefabs[2+i], coords, Quaternion.identity);
         }
         
     }
@@ -195,12 +194,12 @@ public class GameLogic : MonoBehaviour
 
     public void ReplenishArtifact(Vector2 artifactPosition)
     {
-        GameObject go = Instantiate(sceneObjectPrefabs[6], artifactPosition, Quaternion.identity);
+        Instantiate(SceneObjectPrefabs[6], artifactPosition, Quaternion.identity);
     }
 
     public void ReplenishSword(Vector2 swordPosition)
     {
-        GameObject go = Instantiate(sceneObjectPrefabs[8], swordPosition, Quaternion.identity);
+        Instantiate(SceneObjectPrefabs[8], swordPosition, Quaternion.identity);
     }
 
     public void ArtifactScored(int teamNo)
@@ -224,7 +223,6 @@ public class GameLogic : MonoBehaviour
 
     private void GameEnd()
     {
-        //TODO stop the game, display a frame with buttons restart and return to menu
         PauseAction();
         _gameEnded = true;
         _endGamePanelScript.ShowEndGamePanel(Team0Score, Team1Score);
