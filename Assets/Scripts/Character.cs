@@ -35,6 +35,7 @@ public class Character : MonoBehaviour
         _swordPickedUp = false;
         _swordPosition = Vector2.zero;
         _spawnPosition = transform.position;
+        _newPosition = Vector2.zero;
 
         _highlightOnPressScript = GameObject.FindGameObjectWithTag(KeyHelpPanelTagName).GetComponent<HighlightOnPressScript>();
     }
@@ -188,6 +189,7 @@ public class Character : MonoBehaviour
 
     private void RespawnCharacter()
     {
+        _movementChangeSet = false;
         transform.position = _spawnPosition;
         CurrentMoveDir = Vector2.zero;
         NextMoveDir = Vector2.zero;
